@@ -19,7 +19,7 @@ const DoctorNavbar = () => {
 
         {/* Navbar Title Section */}
         <div className="flex-shrink-0">
-          <Link href="/" className="text-sky-800 text-2xl font-bold mr-12">
+          <Link href="/" className="text-sky-800 text-4xl font-bold mr-12">
             medera clinic dashboard
           </Link>
         </div>

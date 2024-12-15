@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import Navbar from "../doctor-navbar";
+import DoctorNavbar from "../doctor-navbar";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -21,7 +21,7 @@ export default function LoginPage() {
 
   return (
     <div>
-      <Navbar />
+      <DoctorNavbar />
       <div className="flex items-center justify-center bg-gradient-to-r from-sky-300 to-sky-500">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 m-36">
           <div className="text-center mb-6">
