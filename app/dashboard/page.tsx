@@ -201,11 +201,11 @@ export default function DoctorDashboard() {
         {/* Main Content */}
         <div className="flex-1 p-10">
           {/* Quick Stats */}
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="md:grid md:grid-cols-2 contents gap-4 mb-6">
             <div className="bg-white p-4 rounded-lg shadow-md">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-gray-500 text-sm">Today's Appointments</h3>
+                  <h3 className="text-gray-500 text-sm font-bold">Today's Appointments</h3>
                   <p className="text-2xl font-bold text-blue-600">{todayAppointments}</p>
                 </div>
                 <Calendar className="text-blue-500" size={32} />
@@ -215,7 +215,7 @@ export default function DoctorDashboard() {
             <div className="bg-white p-4 rounded-lg shadow-md">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-gray-500 text-sm">Notifications</h3>
+                  <h3 className="text-gray-500 text-sm font-bold">Notifications</h3>
                   <p className="text-2xl font-bold text-red-600">{notifications.length}</p>
                 </div>
                 <Bell className="text-red-500" size={32} />
@@ -224,38 +224,41 @@ export default function DoctorDashboard() {
           </div>
 
           {/* Main Dashboard Content */}
-          <div className="grid grid-cols-2 gap-8">
+          <div className="md:grid md:grid-cols-2 contents gap-8">
             {/* QR Code Section */}
-            <div className="bg-white p-6 rounded-xl shadow-lg shadow-gray-300/50 transition-transform hover:scale-105 hover:shadow-xl cursor-pointer flex">
-              <div className="flex-shrink-0 mr-6">
-                <span className="text-xl flex font-semibold text-gray-700 mb-4">Scan QR Code</span>
-                {loadingQr ? (
-                  <div className="flex justify-center items-center h-36">
-                    <p className="text-gray-700">Loading QR Code...</p>
-                  </div>
-                ) : qrCodeValue && qrCodeValue !== "Error fetching QR Code" ? (
-                  <QRCode value={qrCodeValue} height={150} />
-                ) : (
-                  <p className="text-red-500">{qrCodeValue}</p>
-                )}
-              </div>
-              <div className="flex-grow flex flex-col justify-center">
-                <p className="text-gray-600 text-sm">
-                  Scan this QR code to verify doctor.
-                </p>
-              </div>
-            </div>
+            <div className="bg-white p-6 rounded-xl shadow-lg shadow-gray-300/50 transition-transform hover:scale-105 hover:shadow-xl cursor-pointer flex flex-col sm:flex-row">
+  <div className="flex-shrink-0 sm:mr-6 sm:h-80 flex flex-col items-center">
+    <span className="text-2xl font-semibold text-gray-700 mb-4 text-center">Scan QR Code</span>
+    {loadingQr ? (
+      <div className="flex justify-center items-center h-auto">
+        <p className="text-gray-700">Loading QR Code...</p>
+      </div>
+    ) : qrCodeValue && qrCodeValue !== "Error fetching QR Code" ? (
+      <QRCode value={qrCodeValue} className="lg:h-64 h-44" />
+    ) : (
+      <p className="text-red-500">{qrCodeValue}</p>
+    )}
+  </div>
+  <div className="flex-grow flex flex-col justify-center mt-4 sm:mt-0">
+    {qrCodeValue && (
+      <p className="text-gray-600 text-xl text-center font-bold">
+        Scan this QR code to verify doctor.
+      </p>
+    )}
+  </div>
+</div>
+
 
             <div
               onClick={handleManualPrescription}
-              className="p-6 border rounded-lg bg-white text-gray-700 shadow-lg flex flex-col items-center transition-transform hover:scale-105 hover:shadow-xl cursor-pointer relative"
+              className="p-6 border rounded-lg bg-white text-gray-700 shadow-lg md:h-auto sm:h-12 flex flex-col items-center transition-transform hover:scale-105 hover:shadow-xl cursor-pointer relative"
             >
               <h3 className="text-xl font-semibold mb-4">Write Prescription</h3>
               <p className="text-center text-gray-700 mb-6">Click here to manually write a prescription.</p>
               
               {/* Icon Container */}
-              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-sky-100 mb-12 rounded-full p-4 hover:bg-sky-200 flex items-center justify-center w-16 h-16">
-                <Plus className="text-sky-700" size={48} />
+              <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-sky-100 md:mb-20 rounded-full p-4 hover:bg-sky-200 flex items-center justify-center w-16 h-16">
+                <Plus className="text-sky-700 h-auto w-auto" size={48} />
               </div>
             </div>
 

@@ -28,9 +28,9 @@ export default function LoginPage() {
     <div>
       <DoctorNavbar />
       <div className="flex items-center justify-center bg-gradient-to-r from-sky-300 to-sky-500">
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 m-36">
+        <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-4 md:p-8 md:m-36 m-12">
           <div className="text-center mb-6">
-            <h2 className="text-4xl font-bold text-sky-800">Doctor Login</h2>
+            <h2 className="md:text-4xl font-bold text-sky-800">Doctor Login</h2>
             <p className="mt-2 text-sm text-sky-600">
               Sign in to access and manage your dashboard.
             </p>
