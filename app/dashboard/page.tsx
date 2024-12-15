@@ -20,10 +20,8 @@ import Image from "next/image";
 import Link from "next/link";
 
 interface Patient {
+  label: string;
   id: string;
-  name: string;
-  age: number;
-  condition: string;
 }
 
 
