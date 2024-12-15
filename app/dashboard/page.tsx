@@ -33,6 +33,8 @@ export default function DoctorDashboard() {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [connectedPatients, setConnectedPatients] = useState<Patient[]>([]);
   const [isLoadingPatients, setIsLoadingPatients] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
 
 
 
@@ -44,19 +46,15 @@ export default function DoctorDashboard() {
     { id: '3', message: 'Upcoming patient follow-up', time: 'Yesterday' }
   ]);
 
-  // Dummy patient list
-  const dummyPatients = [
-    { id: '1', name: 'John Doe', age: 45, condition: 'Hypertension' },
-    { id: '2', name: 'Sarah Smith', age: 32, condition: 'Diabetes' },
-    { id: '3', name: 'Michael Johnson', age: 55, condition: 'Cardiac Issue' }
-  ];
+  useEffect(() => {
+    const email = localStorage.getItem("loggedInEmail"); // Get email from localStorage
+    if (email) {
+      setUserEmail(email);
+    } else {
+      router.push("/login"); // Redirect to login if no email is found
+    }
+  }, []);
 
-  // Recent consultations
-  const recentConsultations = [
-    { id: '1', patient: 'John Doe', date: '12 Dec 2024', status: 'Completed' },
-    { id: '2', patient: 'Sarah Smith', date: '10 Dec 2024', status: 'Pending Report' },
-    { id: '3', patient: 'Michael Johnson', date: '08 Dec 2024', status: 'Reviewed' }
-  ];
 
   const fetchQrCode = async () => {
     setLoadingQr(true);
@@ -117,7 +115,8 @@ export default function DoctorDashboard() {
   };
 
   const handleLogout = () => {
-    router.push('/login');
+    localStorage.removeItem("loggedInEmail"); // Clear email from localStorage
+    router.push("/login");
   };
   
 
@@ -142,12 +141,12 @@ export default function DoctorDashboard() {
             
             {/* Profile Dropdown */}
             <div className="relative">
-              <button 
+            <button 
                 onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                 className="flex items-center bg-sky-100 px-4 py-2 rounded-lg hover:bg-sky-200 transition-colors"
               >
                 <User className="mr-2" size={20} />
-                Dr. Pankaj Sharma
+                Welcome, {userEmail || "Doctor"}
                 <ChevronDown className="ml-2" size={16} />
               </button>
 

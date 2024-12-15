@@ -12,13 +12,13 @@ export default function LoginPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simple validation
     if (email && password) {
-      setIsLoading(true); // Start the loader
+      setIsLoading(true);
       setTimeout(() => {
-        setIsLoading(false); // Stop the loader after 2 seconds
+        setIsLoading(false);
+        localStorage.setItem("loggedInEmail", email); // Save email to localStorage
         router.push("/dashboard");
-      }, 2000); // Simulate a delay of 2 seconds
+      }, 2000);
     } else {
       alert("Please enter both email and password");
     }
