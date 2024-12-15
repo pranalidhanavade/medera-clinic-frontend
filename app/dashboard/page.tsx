@@ -245,8 +245,7 @@ export default function DoctorDashboard() {
               </div>
               <div className="flex-grow flex flex-col justify-center">
                 <p className="text-gray-600 text-sm">
-                  Scan this QR code to quickly invite patients to your Medera Clinic profile. 
-                  It provides instant access to your professional network and streamlines patient onboarding.
+                  Scan this QR code to verify doctor.
                 </p>
               </div>
             </div>

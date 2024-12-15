@@ -25,23 +25,30 @@ export default function PrescriptionForm() {
   const [credentialUrl, setCredentialUrl] = useState('');  // State to store the credential URL
   const [formSubmitted, setFormSubmitted] = useState(false);  // State to handle form submission
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
       ...prevState,
-      [name]: value
+      [name]: value,
     }));
   };
+  
+  
 
-  const handleMedicineChange = (index, e) => {
+  const handleMedicineChange = (
+    index: number,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     const newMedicines = [...formData.medicines];
-    newMedicines[index][name] = value;
+    newMedicines[index][name as keyof typeof newMedicines[number]] = value;
     setFormData(prevState => ({
       ...prevState,
-      medicines: newMedicines
+      medicines: newMedicines,
     }));
   };
+  
+  
 
   const addMedicineRow = () => {
     setFormData(prevState => ({
@@ -56,7 +63,7 @@ export default function PrescriptionForm() {
     }));
   };
 
-  const removeMedicineRow = (index) => {
+  const removeMedicineRow = (index: number) => {
     const newMedicines = formData.medicines.filter((_, i) => i !== index);
     setFormData(prevState => ({
       ...prevState,
@@ -72,7 +79,7 @@ export default function PrescriptionForm() {
     }
   }, []);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
   
@@ -173,18 +180,18 @@ export default function PrescriptionForm() {
                     Sex
                   </label>
                   <select
-                    id="patientSex"
-                    name="patientSex"
-                    value={formData.patientSex}
-                    onChange={handleInputChange}
-                    required
-                    className="w-full px-4 py-3 border-2 border-sky-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-300 bg-sky-50/50"
-                  >
-                    <option value="">Select Sex</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                  </select>
+  id="patientSex"
+  name="patientSex"
+  value={formData.patientSex}
+  onChange={handleInputChange}
+  required
+  className="w-full px-4 py-3 border-2 border-sky-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-300 bg-sky-50/50"
+>
+  <option value="">Select Sex</option>
+  <option value="male">Male</option>
+  <option value="female">Female</option>
+  <option value="other">Other</option>
+</select>
                 </div>
 
                 <div>
@@ -324,7 +331,7 @@ export default function PrescriptionForm() {
                         value={medicine.instructions}
                         onChange={(e) => handleMedicineChange(index, e)}
                         className="w-full px-4 py-3 border-2 border-sky-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-300 bg-sky-50/50"
-                        rows="3"
+                        rows={3}
                       />
                     </div>
                   </div>
