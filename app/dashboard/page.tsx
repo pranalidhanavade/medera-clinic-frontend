@@ -61,7 +61,7 @@ export default function DoctorDashboard() {
   const fetchQrCode = async () => {
     setLoadingQr(true);
     try {
-        const response = await fetch("https://medera-backend.onrender.com/pharmacy/connectionQr", {
+        const response = await fetch("https://medera-backend.onrender.com/doctor/connectionQr", {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
@@ -69,7 +69,7 @@ export default function DoctorDashboard() {
         });
         if (response.ok) {
             const data = await response.json();
-            console.log("QR Code URL:", data.invitationUrl); // Debug log
+            console.log("QR Code URL:", data.invitationUrl); 
             setQrCodeValue(data.invitationUrl);
         } else {
             console.error("Failed to fetch QR code:", response.statusText);
@@ -84,7 +84,7 @@ export default function DoctorDashboard() {
 };
 
   const fetchConnectedPatients = async () => {
-    setIsLoadingPatients(true); // Start loading patients
+    setIsLoadingPatients(true); 
     try {
       const response = await fetch("https://medera-backend.onrender.com/doctor/patientList", {
         method: "GET",
@@ -94,14 +94,14 @@ export default function DoctorDashboard() {
       });
       if (response.ok) {
         const data = await response.json();
-        setConnectedPatients(data); // Update patient data
+        setConnectedPatients(data);
       } else {
         console.error("Failed to fetch connected patients:", response.statusText);
       }
     } catch (error) {
       console.error("Error fetching connected patients:", error);
     } finally {
-      setIsLoadingPatients(false); // Stop loading patients
+      setIsLoadingPatients(false); 
     }
   };
   
@@ -117,9 +117,6 @@ export default function DoctorDashboard() {
   };
 
   const handleLogout = () => {
-    // Clear any authentication tokens or user data from local storage
-    localStorage.removeItem('authToken');
-    // Redirect to login page
     router.push('/login');
   };
   
