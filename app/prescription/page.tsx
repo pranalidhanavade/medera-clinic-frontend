@@ -323,7 +323,6 @@ export default function PrescriptionForm() {
                         name="instructions"
                         value={medicine.instructions}
                         onChange={(e) => handleMedicineChange(index, e)}
-                        required
                         className="w-full px-4 py-3 border-2 border-sky-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-300 bg-sky-50/50"
                         rows="3"
                       />

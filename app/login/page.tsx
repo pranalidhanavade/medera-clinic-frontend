@@ -7,13 +7,18 @@ import DoctorNavbar from "../doctor-navbar";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // State to manage loading
   const router = useRouter();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     // Simple validation
     if (email && password) {
-      router.push("/dashboard");
+      setIsLoading(true); // Start the loader
+      setTimeout(() => {
+        setIsLoading(false); // Stop the loader after 2 seconds
+        router.push("/dashboard");
+      }, 2000); // Simulate a delay of 2 seconds
     } else {
       alert("Please enter both email and password");
     }
@@ -27,7 +32,7 @@ export default function LoginPage() {
           <div className="text-center mb-6">
             <h2 className="text-4xl font-bold text-sky-800">Doctor Login</h2>
             <p className="mt-2 text-sm text-sky-600">
-              Sign in to access your dashboard and manage your patients.
+              Sign in to access and manage your dashboard.
             </p>
           </div>
 
@@ -69,48 +74,44 @@ export default function LoginPage() {
               />
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 text-sky-600 border-gray-300 rounded"
-                />
-                <label
-                  htmlFor="remember-me"
-                  className="ml-2 text-sm text-gray-600"
-                >
-                  Remember me
-                </label>
-              </div>
-              <a
-                href="#"
-                className="text-sm text-sky-600 hover:text-sky-700"
-              >
-                Forgot your password?
-              </a>
-            </div>
-
             <button
               type="submit"
-              className="w-full py-3 mt-6 text-white font-medium bg-sky-600 rounded-lg hover:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-sky-500"
+              className={`w-full py-3 mt-6 text-white font-medium rounded-lg focus:outline-none focus:ring-2 ${
+                isLoading
+                  ? "bg-sky-400 cursor-not-allowed"
+                  : "bg-sky-600 hover:bg-sky-700 focus:ring-sky-500"
+              }`}
+              disabled={isLoading} // Disable button during loading
             >
-              Sign in
+              {isLoading ? (
+                <div className="flex justify-center items-center">
+                  <svg
+                    className="w-5 h-5 animate-spin text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8H4z"
+                    ></path>
+                  </svg>
+                  <span className="ml-2">Signing in...</span>
+                </div>
+              ) : (
+                "Sign in"
+              )}
             </button>
           </form>
-
-          <div className="text-center mt-6">
-            <p className="text-sm text-gray-600">
-              Don't have an account?{" "}
-              <a
-                href="#"
-                className="text-sky-600 hover:text-sky-700"
-              >
-                Sign up
-              </a>
-            </p>
-          </div>
         </div>
       </div>
     </div>
