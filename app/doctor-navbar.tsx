@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import Link from "next/link";
-import Image from "next/image";
+import React, { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Stethoscope, Menu, X } from 'lucide-react';
 
 const DoctorNavbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -9,44 +10,79 @@ const DoctorNavbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const navLinks = [
+    { href: "/login", label: "blog" },
+    { href: "/login", label: "Patients" },
+    { href: "/login", label: "Schedule" },
+    { href: "/login", label: "Profile" }
+  ];
+
   return (
-    <nav className="bg-white shadow-lg">
-      <div className="max-w-auto mx-auto flex justify-between items-center px-4 md:px-8">
-        {/* Logo Section */}
-        <div className="flex items-center ml-4 md:ml-12">
-          <Image
-            src="/medera_logo_transparent.png"
-            alt="Doctor Project Logo"
-            layout="intrinsic"
-            width={120}
-            height={120}
-            className="rounded-full"
-          />
+    <nav className="bg-white border-b-2 border-blue-100 shadow-sm" style={{
+      padding: 5
+    }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-20">
+          {/* Logo and Title Section */}
+          <div className="flex items-center">
+            <Image
+              src="/medera_logo_transparent.png"
+              alt="Medera Clinic Logo"
+              width={80}
+              height={80}
+              className="rounded-full shadow-md transition-transform hover:scale-105"
+            />
+            <div className="ml-4 flex items-center">
+              <Stethoscope className="text-blue-600 mr-2" size={24} />
+              <Link 
+                href="/" 
+                className="text-blue-800 text-2xl font-semibold tracking-tight hover:text-blue-600 transition-colors"
+              >
+                Medera Clinic
+              </Link>
+            </div>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-6">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-gray-600 hover:text-blue-700 font-medium transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <div className="md:hidden flex items-center">
+            <button 
+              onClick={toggleMenu} 
+              className="text-gray-600 hover:text-blue-600 focus:outline-none"
+              aria-label="Toggle mobile menu"
+            >
+              {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+          </div>
         </div>
 
-        {/* Navbar Title Section */}
-        <div className="hidden md:flex flex-shrink-0">
-          <Link href="/" className="text-sky-800 text-2xl md:text-4xl font-bold mr-4 md:mr-12">
-            medera clinic dashboard
-          </Link>
-        </div>
-
-        {/* Mobile Menu Toggle */}
-        <div className="md:hidden">
-          <button onClick={toggleMenu} className="text-gray-800 focus:outline-none">
-            <i className={`fas ${isMenuOpen ? "fa-times" : "fa-bars"} text-2xl`}></i>
-          </button>
-        </div>
+        {/* Mobile Menu Dropdown */}
+        {isMenuOpen && (
+          <div className="md:hidden bg-white shadow-md rounded-b-lg">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="block px-4 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition-colors"
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
-
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-gray-50 shadow-md py-4">
-          <Link href="/" className="block text-center text-sky-800 text-xl font-semibold py-2">
-            medera clinic dashboard
-          </Link>
-        </div>
-      )}
     </nav>
   );
 };

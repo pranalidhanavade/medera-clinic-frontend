@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import DoctorNavbar from "../doctor-navbar";
 
 interface Patient {
   label: string;
@@ -210,48 +211,7 @@ export default function DoctorDashboard() {
 
   return (
     <div>
-      <header className="bg-white shadow-lg">
-        <div className="max-w-auto mx-auto flex justify-between items-center px-4">
-          <div className="flex items-center ml-12">
-            <Image
-              src="/medera_logo_transparent.png"
-              alt="Doctor Project Logo"
-              width={140}
-              height={140}
-              className="rounded-full"
-            />
-          </div>
-          <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="text-sky-800 text-4xl font-bold mr-12">
-              Medera Clinic Dashboard
-            </Link>
-            
-            <div className="relative">
-              <button 
-                onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                className="flex items-center bg-sky-100 px-4 py-2 rounded-lg hover:bg-sky-200 transition-colors"
-              >
-                <User className="mr-2" size={20} />
-                Welcome, {userEmail || "Doctor"}
-                <ChevronDown className="ml-2" size={16} />
-              </button>
-
-              {isProfileDropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50">
-                  <button 
-                    onClick={handleLogout}
-                    className="flex items-center w-full px-4 py-2 text-left hover:bg-gray-100 transition-colors"
-                  >
-                    <LogOut className="mr-2" size={16} />
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </header>
-
+      <DoctorNavbar />
       <div className="min-h-screen bg-gradient-to-r from-sky-300 to-sky-500 flex">
         <div className="w-64 bg-white shadow-lg p-4">
           <div className="flex items-center mb-10 p-4 bg-sky-100 rounded-lg">
