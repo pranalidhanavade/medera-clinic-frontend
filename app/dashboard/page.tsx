@@ -29,10 +29,8 @@ interface Prescription {
   id: string;
   createdAt: string;
   updatedAt: string;
-  patientName?: string;
-  medicineDetails?: string;
-  dosage?: string;
-  instructions?: string;
+  patientDetails: string; 
+  prescriptionDetails: string;
 }
 
 export default function DoctorDashboard() {
@@ -40,102 +38,77 @@ export default function DoctorDashboard() {
   const [qrCodeValue, setQrCodeValue] = useState("");
   const [loadingQr, setLoadingQr] = useState(true);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [connectedPatients, setConnectedPatients] = useState<Patient[]>([]);
-  const [isLoadingPatients, setIsLoadingPatients] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [isLoadingPrescriptions, setIsLoadingPrescriptions] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalPrescription, setModalPrescription] = useState<Prescription | null>(null);
+  const [prescriptionIds, setPrescriptionIds] = useState<string[]>([]);
 
-  // Function to navigate to the prescription page
   const handleManualPrescription = () => {
     router.push("/prescription");
   };
 
-  const handleViewPatient = async (patient: Patient) => {
-    setSelectedPatient(patient);
-    setPrescriptions([]); // Reset prescriptions
-    setModalPrescription(null); // Reset modal prescription
-    setIsLoadingPrescriptions(true); // Show loader for prescriptions
-  
+  const fetchPrescriptionIds = async () => {
     try {
-      const payload = { connectionId: patient.id };
-      const prescriptionIdsResponse = await fetch(
-        "https://medera-backend.onrender.com/doctor/prescriptionsByPatient",
+      const response = await fetch("https://medera-backend.onrender.com/doctor/getAllPrescriptions", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const ids = data.map((item: { id: string }) => item.id);
+        setPrescriptionIds(ids);
+      } else {
+        console.error("Failed to fetch prescription IDs:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching prescription IDs:", error);
+    }
+  };
+
+  const fetchPrescriptionDetails = async (prescriptionId: string) => {
+    try {
+      const response = await fetch(
+        `https://medera-backend.onrender.com/doctor/prescriptionByPrescriptionId?PrescriptionId=${prescriptionId}`,
         {
-          method: "POST",
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(payload),
         }
       );
-  
-      if (!prescriptionIdsResponse.ok) {
-        console.error("Failed to fetch prescription IDs:", prescriptionIdsResponse.statusText);
-        return;
-      }
-  
-      const prescriptionIds: Prescription[] = await prescriptionIdsResponse.json();
-      console.log("🚀 ~ +++++++++++++=121111111111111111111111", prescriptionIds)
-  
-      if (prescriptionIds.length > 0) {
-        const mostRecentPrescription = prescriptionIds.reduce((latest, current) =>
-          new Date(current.updatedAt) > new Date(latest.updatedAt) ? current : latest
-      );
-      console.log("🚀 ~ _________222222222222+======", mostRecentPrescription)
-  
-        const { id: recentPrescriptionId } = mostRecentPrescription;
-  
-        const prescriptionDetailsResponse = await fetch(
-          `https://medera-backend.onrender.com/doctor/prescriptionByPrescriptionId?PrescriptionId=${recentPrescriptionId}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
-  
-        if (!prescriptionDetailsResponse.ok) {
-          console.error("Failed to fetch prescription details:", prescriptionDetailsResponse.statusText);
-          return;
-        }
-  
-        const prescriptionData = await prescriptionDetailsResponse.json();
-        const prescriptionDetails = JSON.parse(
-          prescriptionData.proposal.jsonld.credential.credentialSubject.prescription
-        );
-  
+
+      if (response.ok) {
+        const data = await response.json();
+        const prescription = data.offer?.jsonld?.credential?.credentialSubject;
+        const patientDetails = JSON.parse(prescription?.patientDetails || "{}");
+        const prescriptionDetails = JSON.parse(prescription?.prescription || "{}");
+
         setModalPrescription({
-          id: recentPrescriptionId,
-          updatedAt: mostRecentPrescription.updatedAt,
-          medicineDetails: prescriptionDetails.medicines
-            .map(
-              (med: { medicineName: string; dosage: string; time: string; instructions: string }) =>
-                `${med.medicineName} (${med.dosage}): ${med.time} - ${med.instructions}`
-            )
-            .join(", "),
-          createdAt: "",
+          id: prescriptionId,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
+          patientDetails: JSON.stringify(patientDetails, null, 2), 
+          prescriptionDetails: JSON.stringify(prescriptionDetails, null, 2),
         });
-  
-        setIsModalOpen(true); // Open the modal
+        setIsModalOpen(true);
+      } else {
+        console.error("Failed to fetch prescription details:", response.statusText);
       }
     } catch (error) {
-      console.error("Error fetching prescriptions:", error);
-    } finally {
-      setIsLoadingPrescriptions(false); // Hide loader
+      console.error("Error fetching prescription details:", error);
     }
   };
-  
-  
+
+
+
   const closeModal = () => {
     setIsModalOpen(false);
     setModalPrescription(null);
   };
-  
 
   const fetchQrCode = async () => {
     setLoadingQr(true);
@@ -159,40 +132,6 @@ export default function DoctorDashboard() {
     }
   };
 
-  const fetchConnectedPatients = async () => {
-    setIsLoadingPatients(true);
-    try {
-      const response = await fetch("https://medera-backend.onrender.com/doctor/patientList", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        const processedPatients = data.reduce((acc: any, patient: any) => {
-          const existingPatient = acc.find((p: any) => p.label === patient.label);
-          if (!existingPatient) {
-            acc.push({ label: patient.label, id: patient.id });
-          } else {
-            const existingIndex = acc.findIndex((p: any) => p.label === patient.label);
-            if (new Date(patient.id) > new Date(acc[existingIndex].id)) {
-              acc[existingIndex].id = patient.id;
-            }
-          }
-          return acc;
-        }, []);
-        setConnectedPatients(processedPatients);
-      } else {
-        console.error("Failed to fetch connected patients:", response.statusText);
-      }
-    } catch (error) {
-      console.error("Error fetching connected patients:", error);
-    } finally {
-      setIsLoadingPatients(false);
-    }
-  };
-
   useEffect(() => {
     const email = localStorage.getItem("loggedInEmail");
     if (email) {
@@ -201,7 +140,7 @@ export default function DoctorDashboard() {
       router.push("/login");
     }
     fetchQrCode();
-    fetchConnectedPatients();
+    fetchPrescriptionIds();
   }, []);
 
   const handleLogout = () => {
@@ -281,28 +220,28 @@ export default function DoctorDashboard() {
             </div>
           </div>
 
-          {/* Connected Patients */}
+          {/* Prescription IDs Section */}
           <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-4">Connected Patients</h2>
-            {isLoadingPatients ? (
-              <p className="text-gray-500">Loading connected patients...</p>
-            ) : connectedPatients.length === 0 ? (
-              <p className="text-gray-500">No connected patients yet.</p>
+            <h2 className="text-xl font-semibold mb-4">Prescription IDs</h2>
+            {isLoadingPrescriptions ? (
+              <p className="text-gray-500">Loading prescription IDs...</p>
+            ) : prescriptionIds.length === 0 ? (
+              <p className="text-gray-500">No prescriptions available.</p>
             ) : (
               <ul className="space-y-4">
-                {connectedPatients.map((patient) => (
+                {prescriptionIds.map((id) => (
                   <li
-                    key={patient?.id}
+                    key={id}
                     className="flex justify-between items-center p-3 border-b last:border-b-0"
                   >
                     <div>
-                      <h4 className="text-lg font-medium">{patient?.label}</h4>
+                      <h4 className="text-lg font-medium">{id}</h4>
                     </div>
                     <button
-                      onClick={() => handleViewPatient(patient)}
-                      className="text-sky-600 hover:text-sky-800"
+                      onClick={() => fetchPrescriptionDetails(id)}
+                      className="text-sky-600 hover:text-sky-800 font-medium"
                     >
-                      View Previous Prescriptions
+                      View
                     </button>
                   </li>
                 ))}
@@ -311,29 +250,39 @@ export default function DoctorDashboard() {
           </div>
         </div>
       </div>
-
       {isModalOpen && modalPrescription && (
-      <div className="fixed inset-0 bg-gray-800 bg-opacity-50 z-50 flex items-center justify-center">
-        <div className="bg-white p-8 rounded-lg max-w-xl w-full">
-          <h2 className="text-xl font-semibold mb-4">Prescription Details</h2>
-          {isLoadingPrescriptions ? (
-            <p>Loading prescription details...</p>
-          ) : (
-            <>
-              <p className="mb-4"><strong>Medicines:</strong> {modalPrescription?.medicineDetails}</p>
-              <p className="mb-4"><strong>Dosage:</strong> {modalPrescription?.dosage}</p>
-              <p className="mb-4"><strong>Instructions:</strong> {modalPrescription?.instructions}</p>
-            </>
-          )}
-          <button
-            onClick={closeModal}
-            className="text-white bg-red-500 px-4 py-2 rounded-lg"
-          >
-            Close
-          </button>
-        </div>
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-white p-8 rounded-lg shadow-lg max-w-lg w-full">
+      
+      {/* Prescription Header */}
+      <h3 className="text-2xl font-semibold mb-4 text-center text-sky-700">Prescription Details</h3>
+      
+      {/* Prescription Information */}
+      <div className="mb-6">
+        <p className="text-xl font-medium text-gray-700">Prescription:</p>
+        {JSON.parse(modalPrescription.prescriptionDetails).medicines.map((medicine: any, index: number) => (
+          <div key={index} className="bg-gray-50 p-4 rounded-lg shadow-sm mb-4">
+            <p className="text-lg text-gray-800 font-semibold">Medicine Name: <span className="font-normal">{medicine.medicineName}</span></p>
+            <p className="text-lg text-gray-800 font-semibold">Dosage: <span className="font-normal">{medicine.dosage}</span></p>
+            <p className="text-lg text-gray-800 font-semibold">Time: <span className="font-normal">{medicine.time}</span></p>
+          </div>
+        ))}
       </div>
-    )}
+
+      {/* Close Button */}
+      <div className="mt-4 text-center">
+        <button
+          onClick={closeModal}
+          className="px-6 py-2 bg-red-500 text-white rounded-full text-lg font-semibold hover:bg-red-600 transition duration-200"
+        >
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
+
     </div>
   );
 }
