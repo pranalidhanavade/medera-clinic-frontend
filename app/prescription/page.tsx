@@ -15,7 +15,6 @@ export default function PrescriptionForm() {
       medicineName: '',
       dosage: '',
       time: '',
-      frequency: '',
       instructions: ''
     }],
     patientAge: '',
@@ -57,7 +56,6 @@ export default function PrescriptionForm() {
         medicineName: '',
         dosage: '',
         time: '',
-        frequency: '',
         instructions: ''
       }]
     }));
