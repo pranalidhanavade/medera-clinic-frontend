@@ -92,7 +92,7 @@ export default function PrescriptionForm() {
   
     const prescription = JSON.stringify({
       medicines: formData.medicines,
-      connectionId: formData.connectionId,
+      // connectionId: formData.connectionId,
     });
   
     const payload = {
@@ -177,21 +177,21 @@ export default function PrescriptionForm() {
                     htmlFor="patientSex" 
                     className="block text-sm font-medium text-sky-800 mb-2"
                   >
-                    Sex
+                    Gender
                   </label>
                   <select
-  id="patientSex"
-  name="patientSex"
-  value={formData.patientSex}
-  onChange={handleInputChange}
-  required
-  className="w-full px-4 py-3 border-2 border-sky-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-300 bg-sky-50/50"
->
-  <option value="">Select Sex</option>
-  <option value="male">Male</option>
-  <option value="female">Female</option>
-  <option value="other">Other</option>
-</select>
+                  id="patientSex"
+                  name="patientSex"
+                  value={formData.patientSex}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-4 py-3 border-2 border-sky-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 transition duration-300 bg-sky-50/50"
+                >
+                  <option value="">Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                </select>
                 </div>
 
                 <div>

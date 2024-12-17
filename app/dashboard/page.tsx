@@ -24,65 +24,142 @@ interface Patient {
   id: string;
 }
 
+interface Prescription {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  patientName?: string;
+  medicineDetails?: string;
+  dosage?: string;
+  instructions?: string;
+}
 
 export default function DoctorDashboard() {
   const router = useRouter();
   const [qrCodeValue, setQrCodeValue] = useState("");
-    
   const [loadingQr, setLoadingQr] = useState(true);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [connectedPatients, setConnectedPatients] = useState<Patient[]>([]);
   const [isLoadingPatients, setIsLoadingPatients] = useState(true);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
+  const [isLoadingPrescriptions, setIsLoadingPrescriptions] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalPrescription, setModalPrescription] = useState<Prescription | null>(null);
 
+  // Function to navigate to the prescription page
+  const handleManualPrescription = () => {
+    router.push("/prescription");
+  };
 
-
-
-  // Dummy data for dashboard
-  const [todayAppointments, setTodayAppointments] = useState(7);
-  const [notifications, setNotifications] = useState([
-    { id: '1', message: 'New patient consultation request', time: '10 mins ago' },
-    { id: '2', message: 'Prescription approved', time: '2 hours ago' },
-    { id: '3', message: 'Upcoming patient follow-up', time: 'Yesterday' }
-  ]);
-
-  useEffect(() => {
-    const email = localStorage.getItem("loggedInEmail"); // Get email from localStorage
-    if (email) {
-      setUserEmail(email);
-    } else {
-      router.push("/login"); // Redirect to login if no email is found
+  const handleViewPatient = async (patient: Patient) => {
+    setSelectedPatient(patient);
+    setPrescriptions([]); // Reset prescriptions
+    setModalPrescription(null); // Reset modal prescription
+    setIsLoadingPrescriptions(true); // Show loader for prescriptions
+  
+    try {
+      const payload = { connectionId: patient.id };
+      const prescriptionIdsResponse = await fetch(
+        "https://medera-backend.onrender.com/doctor/prescriptionsByPatient",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+  
+      if (!prescriptionIdsResponse.ok) {
+        console.error("Failed to fetch prescription IDs:", prescriptionIdsResponse.statusText);
+        return;
+      }
+  
+      const prescriptionIds: Prescription[] = await prescriptionIdsResponse.json();
+      console.log("🚀 ~ +++++++++++++=121111111111111111111111", prescriptionIds)
+  
+      if (prescriptionIds.length > 0) {
+        const mostRecentPrescription = prescriptionIds.reduce((latest, current) =>
+          new Date(current.updatedAt) > new Date(latest.updatedAt) ? current : latest
+      );
+      console.log("🚀 ~ _________222222222222+======", mostRecentPrescription)
+  
+        const { id: recentPrescriptionId } = mostRecentPrescription;
+  
+        const prescriptionDetailsResponse = await fetch(
+          `https://medera-backend.onrender.com/doctor/prescriptionByPrescriptionId?PrescriptionId=${recentPrescriptionId}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+  
+        if (!prescriptionDetailsResponse.ok) {
+          console.error("Failed to fetch prescription details:", prescriptionDetailsResponse.statusText);
+          return;
+        }
+  
+        const prescriptionData = await prescriptionDetailsResponse.json();
+        const prescriptionDetails = JSON.parse(
+          prescriptionData.proposal.jsonld.credential.credentialSubject.prescription
+        );
+  
+        setModalPrescription({
+          id: recentPrescriptionId,
+          updatedAt: mostRecentPrescription.updatedAt,
+          medicineDetails: prescriptionDetails.medicines
+            .map(
+              (med: { medicineName: string; dosage: string; time: string; instructions: string }) =>
+                `${med.medicineName} (${med.dosage}): ${med.time} - ${med.instructions}`
+            )
+            .join(", "),
+          createdAt: "",
+        });
+  
+        setIsModalOpen(true); // Open the modal
+      }
+    } catch (error) {
+      console.error("Error fetching prescriptions:", error);
+    } finally {
+      setIsLoadingPrescriptions(false); // Hide loader
     }
-  }, []);
-
+  };
+  
+  
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalPrescription(null);
+  };
+  
 
   const fetchQrCode = async () => {
     setLoadingQr(true);
     try {
-        const response = await fetch("https://medera-backend.onrender.com/doctor/connectionQr", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-        if (response.ok) {
-            const data = await response.json();
-            console.log("QR Code URL:", data.invitationUrl); 
-            setQrCodeValue(data.invitationUrl);
-        } else {
-            console.error("Failed to fetch QR code:", response.statusText);
-            setQrCodeValue("Error fetching QR Code");
-        }
-    } catch (error) {
-        console.error("Error fetching QR code:", error);
+      const response = await fetch("https://medera-backend.onrender.com/doctor/connectionQr", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setQrCodeValue(data.invitationUrl);
+      } else {
         setQrCodeValue("Error fetching QR Code");
+      }
+    } catch (error) {
+      setQrCodeValue("Error fetching QR Code");
     } finally {
-        setLoadingQr(false);
+      setLoadingQr(false);
     }
-};
+  };
 
   const fetchConnectedPatients = async () => {
-    setIsLoadingPatients(true); 
+    setIsLoadingPatients(true);
     try {
       const response = await fetch("https://medera-backend.onrender.com/doctor/patientList", {
         method: "GET",
@@ -92,37 +169,47 @@ export default function DoctorDashboard() {
       });
       if (response.ok) {
         const data = await response.json();
-        setConnectedPatients(data);
+        const processedPatients = data.reduce((acc: any, patient: any) => {
+          const existingPatient = acc.find((p: any) => p.label === patient.label);
+          if (!existingPatient) {
+            acc.push({ label: patient.label, id: patient.id });
+          } else {
+            const existingIndex = acc.findIndex((p: any) => p.label === patient.label);
+            if (new Date(patient.id) > new Date(acc[existingIndex].id)) {
+              acc[existingIndex].id = patient.id;
+            }
+          }
+          return acc;
+        }, []);
+        setConnectedPatients(processedPatients);
       } else {
         console.error("Failed to fetch connected patients:", response.statusText);
       }
     } catch (error) {
       console.error("Error fetching connected patients:", error);
     } finally {
-      setIsLoadingPatients(false); 
+      setIsLoadingPatients(false);
     }
   };
-  
-
 
   useEffect(() => {
+    const email = localStorage.getItem("loggedInEmail");
+    if (email) {
+      setUserEmail(email);
+    } else {
+      router.push("/login");
+    }
     fetchQrCode();
     fetchConnectedPatients();
   }, []);
 
-  const handleManualPrescription = () => {
-    router.push("/prescription");
-  };
-
   const handleLogout = () => {
-    localStorage.removeItem("loggedInEmail"); // Clear email from localStorage
+    localStorage.removeItem("loggedInEmail");
     router.push("/login");
   };
-  
 
   return (
     <div>
-      {/* Header */}
       <header className="bg-white shadow-lg">
         <div className="max-w-auto mx-auto flex justify-between items-center px-4">
           <div className="flex items-center ml-12">
@@ -139,9 +226,8 @@ export default function DoctorDashboard() {
               Medera Clinic Dashboard
             </Link>
             
-            {/* Profile Dropdown */}
             <div className="relative">
-            <button 
+              <button 
                 onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                 className="flex items-center bg-sky-100 px-4 py-2 rounded-lg hover:bg-sky-200 transition-colors"
               >
@@ -198,56 +284,30 @@ export default function DoctorDashboard() {
           </nav>
         </div>
 
-        {/* Main Content */}
         <div className="flex-1 p-10">
-          {/* Quick Stats */}
-          <div className="md:grid md:grid-cols-2 contents gap-4 mb-6">
-            <div className="bg-white p-4 rounded-lg shadow-md">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-gray-500 text-sm font-bold">Today's Appointments</h3>
-                  <p className="text-2xl font-bold text-blue-600">{todayAppointments}</p>
-                </div>
-                <Calendar className="text-blue-500" size={32} />
-              </div>
-            </div>
-
-            <div className="bg-white p-4 rounded-lg shadow-md">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-gray-500 text-sm font-bold">Notifications</h3>
-                  <p className="text-2xl font-bold text-red-600">{notifications.length}</p>
-                </div>
-                <Bell className="text-red-500" size={32} />
-              </div>
-            </div>
-          </div>
-
-          {/* Main Dashboard Content */}
           <div className="md:grid md:grid-cols-2 contents gap-8">
             {/* QR Code Section */}
             <div className="bg-white p-6 rounded-xl shadow-lg shadow-gray-300/50 transition-transform hover:scale-105 hover:shadow-xl cursor-pointer flex flex-col sm:flex-row">
-  <div className="flex-shrink-0 sm:mr-6 sm:h-80 flex flex-col items-center">
-    <span className="text-2xl font-semibold text-gray-700 mb-4 text-center">Scan QR Code</span>
-    {loadingQr ? (
-      <div className="flex justify-center items-center h-auto">
-        <p className="text-gray-700">Loading QR Code...</p>
-      </div>
-    ) : qrCodeValue && qrCodeValue !== "Error fetching QR Code" ? (
-      <QRCode value={qrCodeValue} className="lg:h-64 h-44" />
-    ) : (
-      <p className="text-red-500">{qrCodeValue}</p>
-    )}
-  </div>
-  <div className="flex-grow flex flex-col justify-center mt-4 sm:mt-0">
-    {qrCodeValue && (
-      <p className="text-gray-600 text-xl text-center font-bold">
-        Scan this QR code to verify doctor.
-      </p>
-    )}
-  </div>
-</div>
-
+              <div className="flex-shrink-0 sm:mr-6 sm:h-80 flex flex-col items-center">
+                <span className="text-2xl font-semibold text-gray-700 mb-4 text-center">Scan QR Code</span>
+                {loadingQr ? (
+                  <div className="flex justify-center items-center h-auto">
+                    <p className="text-gray-700">Loading QR Code...</p>
+                  </div>
+                ) : qrCodeValue && qrCodeValue !== "Error fetching QR Code" ? (
+                  <QRCode value={qrCodeValue} className="lg:h-64 h-44" />
+                ) : (
+                  <p className="text-red-500">{qrCodeValue}</p>
+                )}
+              </div>
+              <div className="flex-grow flex flex-col justify-center mt-4 sm:mt-0">
+                {qrCodeValue && (
+                  <p className="text-gray-600 text-xl text-center font-bold">
+                    Scan this QR code to verify doctor.
+                  </p>
+                )}
+              </div>
+            </div>
 
             <div
               onClick={handleManualPrescription}
@@ -255,41 +315,65 @@ export default function DoctorDashboard() {
             >
               <h3 className="text-xl font-semibold mb-4">Write Prescription</h3>
               <p className="text-center text-gray-700 mb-6">Click here to manually write a prescription.</p>
-              
-              {/* Icon Container */}
               <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-sky-100 md:mb-20 rounded-full p-4 hover:bg-sky-200 flex items-center justify-center w-16 h-16">
                 <Plus className="text-sky-700 h-auto w-auto" size={48} />
               </div>
             </div>
-
           </div>
 
-          {/* Recent Patients and Consultations */}
-          <div className="mt-8 grid grid-cols-2 gap-8">
-            
-          </div>
-
+          {/* Connected Patients */}
           <div className="mt-8 bg-white p-6 rounded-lg shadow-md">
-  <h2 className="text-xl font-semibold mb-4">Connected Patients</h2>
-  {isLoadingPatients ? (
-    <p className="text-gray-500">Loading connected patients...</p>
-  ) : connectedPatients.length === 0 ? (
-    <p className="text-gray-500">No connected patients yet.</p>
-  ) : (
-    <ul className="space-y-4">
-      {connectedPatients.map((patient) => (
-        <li key={patient?.id} className="flex justify-between items-center p-3 border-b last:border-b-0 hover:bg-gray-50">
-          <div>
-            <h3 className="font-medium">{patient.label}</h3>
-            <p className="text-sm text-gray-500">ID: {patient.id}</p>
+            <h2 className="text-xl font-semibold mb-4">Connected Patients</h2>
+            {isLoadingPatients ? (
+              <p className="text-gray-500">Loading connected patients...</p>
+            ) : connectedPatients.length === 0 ? (
+              <p className="text-gray-500">No connected patients yet.</p>
+            ) : (
+              <ul className="space-y-4">
+                {connectedPatients.map((patient) => (
+                  <li
+                    key={patient?.id}
+                    className="flex justify-between items-center p-3 border-b last:border-b-0"
+                  >
+                    <div>
+                      <h4 className="text-lg font-medium">{patient?.label}</h4>
+                    </div>
+                    <button
+                      onClick={() => handleViewPatient(patient)}
+                      className="text-sky-600 hover:text-sky-800"
+                    >
+                      View Previous Prescriptions
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-        </li>
-      ))}
-    </ul>
-  )}
-</div>
         </div>
       </div>
+
+      {isModalOpen && modalPrescription && (
+      <div className="fixed inset-0 bg-gray-800 bg-opacity-50 z-50 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-lg max-w-xl w-full">
+          <h2 className="text-xl font-semibold mb-4">Prescription Details</h2>
+          {isLoadingPrescriptions ? (
+            <p>Loading prescription details...</p>
+          ) : (
+            <>
+              <p className="mb-4"><strong>Medicines:</strong> {modalPrescription?.medicineDetails}</p>
+              <p className="mb-4"><strong>Dosage:</strong> {modalPrescription?.dosage}</p>
+              <p className="mb-4"><strong>Instructions:</strong> {modalPrescription?.instructions}</p>
+            </>
+          )}
+          <button
+            onClick={closeModal}
+            className="text-white bg-red-500 px-4 py-2 rounded-lg"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    )}
     </div>
   );
 }
