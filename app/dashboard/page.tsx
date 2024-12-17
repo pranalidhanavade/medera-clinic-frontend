@@ -164,12 +164,13 @@ export default function DoctorDashboard() {
             {[
               { icon: <Stethoscope size={20} />, label: 'Dashboard', route: '/dashboard' },
               { icon: <FileText size={20} />, label: 'Prescriptions', route: '/prescription' },
-              { icon: <Users size={20} />, label: 'Patients', route: '/patients' },
-              { icon: <Calendar size={20} />, label: 'Appointments', route: '/appointments' },
-              { icon: <ClipboardList size={20} />, label: 'Reports', route: '/reports' },
-              { icon: <Mail size={20} />, label: 'Messages', route: '/messages' },
-              { icon: <User size={20} />, label: 'Profile', route: '/profile' },
-              { icon: <Settings size={20} />, label: 'Settings', route: '/settings' }
+              //TODO:
+              { icon: <Users size={20} />, label: 'Patients', route: '/' },
+              { icon: <Calendar size={20} />, label: 'Appointments', route: '/' },
+              { icon: <ClipboardList size={20} />, label: 'Reports', route: '/' },
+              { icon: <Mail size={20} />, label: 'Messages', route: '/' },
+              { icon: <User size={20} />, label: 'Profile', route: '/' },
+              { icon: <Settings size={20} />, label: 'Settings', route: '/' }
             ].map((item) => (
               <button
                 key={item.label}
