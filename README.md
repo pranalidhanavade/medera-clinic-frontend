@@ -20,7 +20,6 @@ This project was built for the **Hedera Hackathon**, showcasing the integration 
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
-  - [Environment Variables](#environment-variables)
 - [Project Structure](#project-structure)
 - [Contributing](#contributing)
 
@@ -97,10 +96,14 @@ We welcome contributions! To contribute:
 ---
 
 **Project Links:**
-- [Backend Repo](https://github.com/GHkrishna/medera-backend) - [Backend Live Demo](https://github.com/GHkrishna/medera-backend/api)
-- [Frontend Pharmacy Repo](https://github.com/pranalidhanavade/medera-pharmacy-frontend) - [Frontend Pharmacy Live Demo](https://medera-pharmacy-frontend.vercel.app/)
+- [Frontend Repo Clinic](https://github.com/pranalidhanavade/medera-clinic-frontend) - [Frontend Clinic Live Demo](https://medera-clinic-frontend.vercel.app/)
+- [Frontend Repo Pharmacy](https://github.com/pranalidhanavade/medera-pharmacy-frontend) - [Frontend Pharmacy Live Demo](https://medera-pharmacy-frontend.vercel.app/)
+- [Live Demo](https://github.com/GHkrishna/medera-backend/api)
 
 ---
 
 **Contact:**  
 For queries or support, reach out to us at: [pranalidhanavade23@gmail.com]
+
+### Thank you,
+![Hedera Logo](./public/hedera.png)

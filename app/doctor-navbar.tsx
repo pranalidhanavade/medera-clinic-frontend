@@ -11,10 +11,10 @@ const DoctorNavbar = () => {
   };
 
   const navLinks = [
-    { href: "/login", label: "blog" },
-    { href: "/login", label: "Patients" },
-    { href: "/login", label: "Schedule" },
-    { href: "/login", label: "Profile" }
+    { href: "/blog", label: "Blog" },
+    { href: "/patients", label: "Patients" },
+    { href: "/schedule", label: "Schedule" },
+    { href: "/profile", label: "Profile" },
   ];
 
   return (
