@@ -1,36 +1,106 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Medera Clinic Frontend
+
+![Medera Logo](./public/medera_logo_transparent.png)  
+**Medera** - Frontend Service for the Hedera Hackathon
+
+This repository contains the frontend service for the **Medera Clinic** project, a healthcare solution built using the [Hedera Hashgraph](https://hedera.com/) platform. The application is developed using [Next.js](https://nextjs.org/) and [Tailwind CSS](https://tailwindcss.com/), providing a modern, responsive, and user-friendly interface.
+
+## Project Overview
+**Medera Clinic** aims to revolutionize healthcare by leveraging the power of distributed ledger technology (DLT). Using the Hedera network, we ensure secure, transparent, and decentralized healthcare solutions.
+
+This project was built for the **Hedera Hackathon**, showcasing the integration of cutting-edge technologies for a transformative healthcare application.
+
+## Features
+- **Doctor Verification**: Connect with doctors securely using QR codes.
+- **Next.js Framework**: Server-side rendering and SEO optimization.
+- **Tailwind CSS**: Modern and responsive UI design.
+- **Integration with Backend APIs**: Seamless interaction with the Medera Backend service.
+
+## Table of Contents
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+  - [Environment Variables](#environment-variables)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+Before running the project, ensure you have the following installed:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- [Node.js](https://nodejs.org/) (v18.x or higher)
+- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/pranalidhanavade/medera-clinic-frontend.git
+   cd medera-clinic-frontend
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Run the application:
+   ```bash
+   npm run dev
+   ```
+
+4. Open your browser and navigate to:
+   ```
+   http://localhost:3000
+   ```
+
+## Project Structure
+```
+medera-clinic-frontend/
+├── app/              # Reusable Next components
+├── public/           # Static assets (e.g., images, icons)
+├── package.json      # Dependencies and scripts
+└── README.md         # Project documentation
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Contributing
+We welcome contributions! To contribute:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Fork the repository.
+2. Create a new branch:
+   ```bash
+   git checkout -b feature-name
+   ```
+3. Commit your changes:
+   ```bash
+   git commit -S -s -m "Add new feature"
+   ```
+4. Push to your branch:
+   ```bash
+   git push origin feature-name
+   ```
+5. Submit a pull request.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Acknowledgments
+- **Hedera**: For providing a secure and efficient DLT platform.
+- **Next.js**: For the modern web development framework.
+- **Tailwind CSS**: For responsive UI design.
+- **Hackathon Team**: Pranali Dhanavade, Sai Ranjit, Tipu Singh
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Project Links:**
+- [Backend Repo](https://github.com/GHkrishna/medera-backend) - [Backend Live Demo](https://github.com/GHkrishna/medera-backend/api)
+- [Frontend Pharmacy Repo](https://github.com/pranalidhanavade/medera-pharmacy-frontend) - [Frontend Pharmacy Live Demo](https://medera-pharmacy-frontend.vercel.app/)
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Contact:**  
+For queries or support, reach out to us at: [pranalidhanavade23@gmail.com]
