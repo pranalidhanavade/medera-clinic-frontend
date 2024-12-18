@@ -164,7 +164,7 @@ export default function DoctorDashboard() {
             {[
               { icon: <Stethoscope size={20} />, label: 'Dashboard', route: '/dashboard' },
               { icon: <FileText size={20} />, label: 'Prescriptions', route: '/prescription' },
-              //TODO:
+              //TODO: 
               { icon: <Users size={20} />, label: 'Patients', route: '/' },
               { icon: <Calendar size={20} />, label: 'Appointments', route: '/' },
               { icon: <ClipboardList size={20} />, label: 'Reports', route: '/' },
@@ -200,13 +200,7 @@ export default function DoctorDashboard() {
                   <p className="text-red-500">{qrCodeValue}</p>
                 )}
               </div>
-              <div className="flex-grow flex flex-col justify-center mt-4 sm:mt-0">
-                {qrCodeValue && (
-                  <p className="text-gray-600 text-xl text-center font-bold">
-                    Scan this QR code to verify doctor.
-                  </p>
-                )}
-              </div>
+              
             </div>
 
             <div
